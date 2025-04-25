@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <title>Display</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <header class="top-bar">
+        <div class="logout-container">
+            <a href="{{ url_for('logout') }}" title="Logout" class="logout-link">🔓</a>
+        </div>
+    </header>
+
+    <div class="container">
+        <table id="data-table" class="table">
+            <thead>
+                <tr>
+                    <th data-column="0" class="sortable">Name</th>
+                    <th data-column="1" class="sortable">Email</th>
+                    <th data-column="2" class="sortable">Phone</th>
+                    <th data-column="3" class="sortable">Prefer Time</th>
+                    <th data-column="4" class="sortable">Submitted At</th>
+                    <th data-column="5" class="sortable">Contact Time</th>
+                    <th data-column="6" class="sortable">Response</th>
+                </tr>
+            </thead>
+            <tbody id="table-body">
+                {% for row in data %}
+                <tr class="data-row" id="row-{{ row[0] }}">
+                    <td>{{ row[1] }}</td>
+                    <td><a href="mailto:{{ row[2] }}">{{ row[2] }}</a></td>
+                    <td class="phone-cell">{{ row[3] }}</td>
+                    <td>{{ row[4] }}</td>
+                    <td><span title="{{ row[5] }}">{{ row[5]|pretty_datetime if row[5] else '—' }}</span></td>
+                    <td><span title="{{ row[6] }}">{{ row[6]|pretty_datetime if row[6] else '—' }}</span></td>
+                    <td class="response-cell">
+                        <div class="response-text">{{ row[7] or '—' }}</div>
+                        <button class="update-btn" data-id="{{ row[0] }}">✏️</button>
+                        <form class="response-form" id="response-form-{{ row[0] }}" style="display: none;" data-id="{{ row[0] }}">
+                            {{ form.hidden_tag() }}
+                            <textarea name="response" maxlength="1000" required placeholder="Enter response" oninput="updateCharCount(this)">{{ row[7] or '' }}</textarea>
+                            <div class="char-counter">1000 characters remaining</div>
+                            <button type="submit">Submit</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <!-- Pagination -->
+        <div class="pagination">
+            <button id="prev-btn" class="pagination-btn" disabled>Previous</button>
+            <span id="page-number">Page 1</span>
+            <button id="next-btn" class="pagination-btn">Next</button>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div class="toast" id="save-toast">✅ Response updated successfully!</div>
+
+    <script>
+        function updateCharCount(textarea) {
+            const maxLen = 1000;
+            const currentLen = textarea.value.length;
+            const counter = textarea.nextElementSibling;
+            counter.textContent = `${maxLen - currentLen} characters remaining`;
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById('save-toast');
+            toast.textContent = message;
+            toast.style.display = 'block';
+            setTimeout(() => {
+                toast.style.display = 'none';
+            }, 3000);
+        }
+
+        function formatPhoneNumber(phone) {
+            const digits = phone.replace(/\D/g, '');
+            if (digits.length === 10) {
+                return `(${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6)}`;
+            }
+            return phone;
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const pageSize = 10;
+            let currentPage = 1;
+            let currentSort = { column: null, order: 'asc' };
+            let rows = Array.from(document.querySelectorAll('.data-row'));
+            const totalPages = Math.ceil(rows.length / pageSize);
+
+            function displayPage(page) {
+                const start = (page - 1) * pageSize;
+                const end = start + pageSize;
+
+                rows.forEach((row, index) => {
+                    row.style.display = (index >= start && index < end) ? '' : 'none';
+                });
+
+                document.getElementById('page-number').textContent = `Page ${page}`;
+                document.getElementById('prev-btn').disabled = (page === 1);
+                document.getElementById('next-btn').disabled = (page === totalPages);
+            }
+
+            function sortTable(colIndex, order) {
+                rows.sort((a, b) => {
+                    let aText = a.children[colIndex].innerText.trim().toLowerCase();
+                    let bText = b.children[colIndex].innerText.trim().toLowerCase();
+
+                    const isDate = colIndex === 4 || colIndex === 5;
+                    if (isDate) {
+                        aText = new Date(aText === '—' ? 0 : aText);
+                        bText = new Date(bText === '—' ? 0 : bText);
+                    }
+
+                    if (aText < bText) return order === 'asc' ? -1 : 1;
+                    if (aText > bText) return order === 'asc' ? 1 : -1;
+                    return 0;
+                });
+
+                const tbody = document.getElementById('table-body');
+                rows.forEach(row => tbody.appendChild(row));
+            }
+
+            function updateSortIndicators() {
+                document.querySelectorAll('th.sortable').forEach(th => {
+                    th.textContent = th.textContent.replace(/[\u25B2\u25BC]/g, '').trim();
+                    if (parseInt(th.dataset.column) === currentSort.column) {
+                        th.textContent += currentSort.order === 'asc' ? ' ▲' : ' ▼';
+                    }
+                });
+            }
+
+            document.querySelectorAll('th.sortable').forEach(header => {
+                header.addEventListener('click', () => {
+                    const colIndex = parseInt(header.dataset.column);
+                    const sameCol = currentSort.column === colIndex;
+                    const order = sameCol && currentSort.order === 'asc' ? 'desc' : 'asc';
+
+                    currentSort = { column: colIndex, order };
+                    sortTable(colIndex, order);
+                    updateSortIndicators();
+                    displayPage(currentPage);
+                });
+            });
+
+            document.getElementById('prev-btn').addEventListener('click', () => {
+                if (currentPage > 1) {
+                    currentPage--;
+                    displayPage(currentPage);
+                }
+            });
+
+            document.getElementById('next-btn').addEventListener('click', () => {
+                if (currentPage < totalPages) {
+                    currentPage++;
+                    displayPage(currentPage);
+                }
+            });
+
+            // Format phone numbers
+            document.querySelectorAll('.phone-cell').forEach(cell => {
+                const phone = cell.textContent.trim();
+                if (phone) {
+                    cell.textContent = formatPhoneNumber(phone);
+                }
+            });
+
+            // Response form toggle
+            document.querySelectorAll('.update-btn').forEach(button => {
+                button.addEventListener('click', () => {
+                    const formId = `response-form-${button.dataset.id}`;
+                    const form = document.getElementById(formId);
+                    const row = document.getElementById(`row-${button.dataset.id}`);
+                    const isVisible = form.style.display === 'block';
+
+                    document.querySelectorAll('.response-form').forEach(f => f.style.display = 'none');
+                    document.querySelectorAll('.data-row').forEach(r => r.classList.remove('highlight-row'));
+
+                    if (!isVisible) {
+                        form.style.display = 'block';
+                        row.classList.add('highlight-row');
+                    }
+                });
+            });
+
+            // Submit response
+            document.querySelectorAll('.response-form').forEach(form => {
+                form.addEventListener('submit', function (e) {
+                    e.preventDefault();
+
+                    const formData = new FormData(form);
+                    const id = form.dataset.id;
+                    const response = formData.get('response');
+                    const contactTimestamp = new Date().toISOString();
+
+                    const data = {
+                        id: id,
+                        response: response,
+                        contact_timestamp: contactTimestamp
+                    };
+
+                    fetch('/update_record', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': document.querySelector('[name="csrf-token"]').content
+                        },
+                        body: JSON.stringify(data)
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.status === "success") {
+                            showToast('✅ Response updated successfully!');
+                            const row = document.getElementById(`row-${id}`);
+                            const form = document.getElementById(`response-form-${id}`);
+                            const responseText = row.querySelector('.response-text');
+
+                            form.style.display = 'none';
+                            responseText.textContent = response || '—';
+
+                            // Update contact time with server-provided timestamp
+                            const contactTimeCell = row.children[5];
+                            const timestamp = data.contact_timestamp || '—';
+
+                            if (timestamp !== '—') {
+                                const date = new Date(timestamp.replace(' ', 'T'));
+                                const pretty = date.toLocaleString('en-US', {
+                                    year: 'numeric',
+                                    month: 'short',
+                                    day: '2-digit',
+                                    hour: '2-digit',
+                                    minute: '2-digit',
+                                    hour12: true
+                            });
+
+                            contactTimeCell.innerHTML = `<span title="${timestamp}">${pretty}</span>`;
+                        } else {
+                            contactTimeCell.innerHTML = `<span title="—">—</span>`;
+                        }
+
+                            row.classList.remove('highlight-row');
+                        } else {
+                            showToast('❌ Failed to update response!');
+                        }
+                    })
+                    .catch(err => {
+                        console.error('Error:', err);
+                        showToast('❌ Error submitting response!');
+                    });
+                });
+            });
+
+            // Initialize
+            displayPage(currentPage);
+        });
+    </script>
+</body>
+</html>

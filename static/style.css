@@ -1,0 +1,320 @@
+/* =======================
+   Reset & Base Styles
+======================= */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f2f2f2;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    height: 100vh;
+    font-size: 12px;
+    color: #333;
+}
+
+/* =======================
+   Flash Messages
+======================= */
+.flashes {
+    list-style: none;
+    padding: 0;
+}
+
+.flashes li {
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 5px;
+    font-weight: bold;
+}
+
+.flashes li.error {
+    background-color: #ffe6e6;
+    color: #d8000c;
+}
+
+.flashes li.success {
+    background-color: #e6ffe6;
+    color: #4F8A10;
+}
+
+/* =======================
+   Form Styling
+======================= */
+.form-container {
+    max-width: 320px;
+    width: 100%;
+    padding: 15px;
+    background-color: #fff;
+    border: 1px solid #333;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    text-align: left;
+}
+
+.form-container img {
+    display: block;
+    margin: 0 auto 10px auto;
+    max-width: 100%;
+    height: auto;
+}
+
+form label {
+    display: block;
+    margin-bottom: 5px;
+    color: #333;
+    font-size: 12px;
+}
+
+.form-field {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 12px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #f7f7f7;
+    font-size: 12px;
+}
+
+.form-field:focus {
+    border-color: #007BFF;
+    box-shadow: 0 0 3px rgba(0, 123, 255, 0.5);
+}
+
+.error-msg {
+    color: red;
+    font-size: 0.8em;
+    margin-top: 5px;
+    display: block;
+}
+
+/* Submit button (form pages) */
+form input[type="submit"], .form-submit {
+    background-color: #333;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    display: block;
+    width: 100%;
+    font-size: 14px;
+}
+
+form input[type="submit"]:hover, .form-submit:hover {
+    background-color: #555;
+}
+
+/* =======================
+   CAPTCHA Section
+======================= */
+.captcha-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 10px;
+}
+
+.captcha-image {
+    width: 100px;
+    height: auto;
+    margin-right: 5px;
+}
+
+.captcha-refresh {
+    background: none;
+    border: none;
+    color: #007BFF;
+    cursor: pointer;
+    font-size: 12px;
+    text-decoration: underline;
+    padding: 0;
+}
+
+.captcha-refresh:hover {
+    color: #0056b3;
+}
+
+/* =======================
+   Table & Data Display
+======================= */
+.container {
+    width: 90%;
+    max-width: 1200px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+    background-color: #fff;
+}
+
+th, td {
+    padding: 8px 10px;
+    text-align: left;
+    border: 1px solid #ddd;
+    vertical-align: top;
+}
+
+th {
+    background-color: #f4f4f4;
+    font-weight: bold;
+    font-size: 12px;
+    position: relative;
+}
+
+th.sortable {
+    cursor: pointer;
+    user-select: none;
+}
+
+th.sortable::after {
+    content: ' ⇅';
+    font-size: 10px;
+    color: #666;
+    margin-left: 4px;
+}
+
+th.sorted-asc::after {
+    content: ' ↑';
+    color: #007BFF;
+}
+
+th.sorted-desc::after {
+    content: ' ↓';
+    color: #007BFF;
+}
+
+/* =======================
+   Pagination Controls
+======================= */
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px;
+}
+
+.pagination-btn {
+    padding: 6px 12px;
+    font-size: 12px;
+    cursor: pointer;
+    background-color: #007BFF;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+}
+
+.pagination-btn:hover {
+    background-color: #0056b3;
+}
+
+#page-number {
+    margin: 0 12px;
+    font-size: 12px;
+}
+
+/* =======================
+   Response Section
+======================= */
+.response-cell {
+    position: relative;
+    padding-bottom: 30px;
+}
+
+.update-btn {
+    position: absolute;
+    bottom: 5px;
+    right: 5px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    color: #333;
+}
+
+.response-form {
+    margin-top: 10px;
+}
+
+.response-form textarea {
+    width: 100%;
+    min-height: 100px;
+    resize: vertical;
+    font-size: 12px;
+    padding: 8px;
+    border-radius: 6px;
+    box-sizing: border-box;
+}
+
+.char-counter {
+    font-size: 11px;
+    color: #666;
+    margin-top: 4px;
+    text-align: right;
+}
+
+.response-form button[type="submit"] {
+    background-color: #000;
+    color: white;
+    border: none;
+    border-radius: 16px;
+    padding: 8px 18px;
+    font-size: 12px;
+    margin-top: 10px;
+    cursor: pointer;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.response-form button[type="submit"]:hover {
+    background-color: #222;
+}
+
+/* =======================
+   Miscellaneous
+======================= */
+.highlight-row {
+    background-color: #e6f2ff !important;
+}
+
+.toast {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: #4caf50;
+    color: white;
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-size: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    display: none;
+    z-index: 9999;
+}
+
+.top-bar {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    padding: 10px 20px;
+    background-color: #f9f9f9;
+    border-bottom: 1px solid #ddd;
+}
+
+.logout-container {
+    margin-left: auto;
+}

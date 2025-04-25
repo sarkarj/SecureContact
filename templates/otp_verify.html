@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>OTP Verification</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <div class="form-container">
+            <h2>OTP Verification</h2>
+            <form method="POST" action="{{ url_for('otp_verify') }}">
+                {{ form.hidden_tag() }}
+
+                <div class="form-group">
+                    <label for="otp">{{ form.otp.label }}</label>
+                    <input type="text" id="otp" name="otp" class="form-field" value="{{ form.otp.data }}" 
+                           maxlength="6" pattern="\d{6}" title="Please enter exactly 6 digits" 
+                           required oninput="this.value=this.value.replace(/\D/g,'');">
+                    {% for error in form.otp.errors %}
+                        <span class="error-msg">{{ error }}</span>
+                    {% endfor %}
+                </div>
+
+                <div class="form-group">
+                    <button type="submit" class="form-submit">Verify OTP</button>
+                </div>
+            </form>
+
+            {% if error %}
+                <div class="error-msg">{{ error }}</div>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>

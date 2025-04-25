@@ -1,0 +1,27 @@
+version: "3.9"
+
+services:
+  contact_client:
+    build: .
+    container_name: contact_client
+    env_file:
+      - .env
+    environment:
+      FLASK_RUN_HOST: 0.0.0.0
+      FLASK_RUN_PORT: 8080
+      RATELIMIT_STORAGE_URL: memory://
+      RATELIMIT_DEFAULT: 5 per second
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./database.db:/app/database.db
+    restart: always
+    entrypoint: |
+      /bin/sh -c "
+        chmod 600 /app/database.db;
+        exec gunicorn app:app --bind 0.0.0.0:8080
+      "
+  redis:
+    image: redis:7
+    container_name: redis
+    restart: always
