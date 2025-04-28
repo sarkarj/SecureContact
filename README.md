@@ -1,8 +1,10 @@
-# ContactClient Flask App
+# ContactClient App
 
-The **ContactClient Flask App** is a secure web application built with Flask, designed for managing user data including name, email, phone, preferred time to connect, and admin-level features such as OTP verification and note addition. This application uses encryption, CAPTCHA validation, and phone verification to ensure security.
+**ContactClient** is a secure web-based form designed to collect user contact information safely.
+It protects against bots using CAPTCHA, validates phone numbers via external APIs, encrypts sensitive data, and allows administrators to view or manage records after TOTP-based MFA verification. The project is fully containerized with Docker and optimized for production deployment behind an NGINX reverse proxy.
 
-## Features
+
+## 🧰 Scope
 
 - **User Management:** Allows users to submit their details including name, email, phone, and preferred time to connect.
 - **Admin Authentication:** Admin users are required to complete OTP verification before accessing and managing user data.
@@ -11,9 +13,39 @@ The **ContactClient Flask App** is a secure web application built with Flask, de
 - **CAPTCHA Protection:** A CAPTCHA is generated to prevent automated submissions.
 - **Rate Limiting:** Limits the number of requests to prevent abuse and ensure smooth user experience.
 
-## Installation
+## ✨ Features
 
-### Dockerized Installation
+- 🔒 Encrypted Database Storage (using Fernet)
+- 🤖 CAPTCHA Protection (custom-generated and AJAX-validated)
+- ☎️ Phone Number Validation (Numverify API)
+- 🛡️ Rate Limiting (Flask-Limiter)
+- 🧹 Modern Client-Side Validation (WTForms + JavaScript)
+- 🔑 MFA (Multi-Factor Authentication) for Admin Dashboard Access (TOTP-based)
+- 📦 Dockerized (with docker-compose.yml)
+- 🕵️ Session Management (Flask-Session)
+- 🛠️ Production Ready (Gunicorn server, NGINX reverse proxy with SSL)
+- 🔥 CAPTCHA Refresh Limits (rate-limited refresh button)
+- 🌍 Fully Configurable via .env file
+
+<img src="./static/Form.png" width="250"><img src="./static/OTP.png" width="200"><img src="./static/Display.png" width="500">  
+## 🏗️ Architecture Overview
+<img src="./static/Architecture.png" width="500">
+
+## 📖 Environment Variables
+
+ ```plaintext
+    SECRET_KEY=your_secret_key
+    FLASK_ENV=production
+    FERNET_KEY=your_fernet_key
+    NUMVERIFY_API_KEY=your_numverify_api_key
+    DB_NAME=your_db_name.db
+    TOTP_SECRET=your_totp_secret
+    RATELIMIT_STORAGE_URL=your_ratelimit_storage_url
+ ```
+
+## 🚀 Installation
+
+### 🐳 Dockerized Installation
 
 To set up this application in a Docker container, follow these steps:
 
@@ -25,17 +57,8 @@ To set up this application in a Docker container, follow these steps:
 
 2. **Set Up Environment Variables:**
 
-   - Create a `.env` file at the root of the repository with the following variables:
+   - Create a `.env` file at the root of the repository
 
-    ```plaintext
-    SECRET_KEY=your_secret_key
-    FLASK_ENV=production
-    FERNET_KEY=your_fernet_key
-    NUMVERIFY_API_KEY=your_numverify_api_key
-    DB_NAME=your_db_name.db
-    TOTP_SECRET=your_totp_secret
-    RATELIMIT_STORAGE_URL=your_ratelimit_storage_url
-    ```
 
 3. **Build and Run the Docker Container:**
 
@@ -47,7 +70,7 @@ To set up this application in a Docker container, follow these steps:
 
     This will build the Docker image and start the application in a container. The application will be available at `http://localhost:8080`.
 
-### Manual Installation
+### ⚙️ Manual Installation
 
 1. **Install Dependencies:**
 
@@ -67,33 +90,31 @@ To set up this application in a Docker container, follow these steps:
 
     The application will run locally on `http://localhost:8080`.
 
-## Admin OTP Verification
+## 🔑 Admin OTP Verification
 
 Admin users must authenticate via OTP before accessing the records. This feature ensures that only authorized personnel can view or add notes to the user data. The OTP is verified using a time-based one-time password (TOTP) algorithm, which is configured with a secret key.
 
-## Usage
+## 🎯 Usage
 
 - **Homepage:** The homepage allows users to submit their details through a form, including name, email, phone number, and preferred time to connect.
 - **Admin Panel:** Admin users can access and update records after successful OTP verification.
 - **Database:** The user data is stored securely in a SQLite database, with encrypted fields for sensitive information.
 
-## Security Features
+## 🔒 Security Features
 
-- **CSRF Protection:** Prevents cross-site request forgery attacks.
-- **Encryption:** All sensitive data (e.g., name, email, phone) is encrypted using the Fernet encryption system.
-- **CAPTCHA Validation:** Protects the forms from bot submissions.
-- **Phone Number Validation:** Ensures the validity of the phone number entered by the user using the NumVerify API.
-- **Rate Limiting:** Limits the number of requests to prevent abuse.
+- All data in the database is encrypted.
+- All form inputs are validated both client-side and server-side.
+- CSRF protection is enabled for all forms.
+- MFA (TOTP) is required for accessing sensitive admin areas.
+- Rate limiting protects endpoints against abuse.
+- CAPTCHA refresh is rate-limited.
+- NGINX SSL/TLS termination is enabled in production (Let’s Encrypt).
 
-## License
+## 📜 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## Contributing
-
-We welcome contributions to this project. Please fork the repository, make your changes, and submit a pull request. Be sure to follow the coding standards and provide tests where applicable.
-
-## Acknowledgments
+## 🤝 Acknowledgments
 
 - Flask for building the web framework.
 - Flask-WTF for form handling.
