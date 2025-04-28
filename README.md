@@ -1,8 +1,7 @@
 # ContactClient App
 
-**ContactClient** is a secure web-based form designed to collect user contact information safely.
+<a href="https://mycontact.duckdns.org">**ContactClient**</a> is a secure web-based form designed to collect user contact information safely.
 It protects against bots using CAPTCHA, validates phone numbers via external APIs, encrypts sensitive data, and allows administrators to view or manage records after TOTP-based MFA verification. The project is fully containerized with Docker and optimized for production deployment behind an NGINX reverse proxy.
-
 
 ## 🧰 Scope
 
